@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Malla Curricular - Ingeniería en Alimentos</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(11, 1fr);
+      gap: 10px;
+      overflow-x: auto;
+    }
+
+    .cuatrimestre {
+      background-color: #ffffff;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .cuatrimestre h3 {
+      text-align: center;
+      color: #34495e;
+    }
+
+    .materia {
+      background-color: #dfe6e9;
+      margin: 6px 0;
+      padding: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      position: relative;
+    }
+
+    .materia.aprobada {
+      background-color: #81ecec;
+      text-decoration: line-through;
+    }
+
+    .materia.bloqueada {
+      background-color: #b2bec3;
+      cursor: not-allowed;
+    }
+
+    .materia[title]:hover::after {
+      content: attr(title);
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: #2d3436;
+      color: #fff;
+      padding: 5px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      white-space: pre-wrap;
+      margin-top: 5px;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <h1>Malla Curricular - Ingeniería en Alimentos</h1>
+  <div class="grid" id="malla"></div>
+
+  <script>
+    const materias = [
+      { codigo: "CB01", nombre: "Introducción al análisis matemático", cuatrimestre: 1 },
+      { codigo: "CB36", nombre: "Introducción a la informática", cuatrimestre: 1 },
+      { codigo: "IAL01", nombre: "Introducción a la industria de los alimentos", cuatrimestre: 1 },
+      { codigo: "CB03", nombre: "Química general", cuatrimestre: 1 },
+
+      { codigo: "CB05", nombre: "Cálculo I", cuatrimestre: 2, requisitos: ["CB01"] },
+      { codigo: "CB06", nombre: "Álgebra y geometría analítica", cuatrimestre: 2, requisitos: ["CB01"] },
+      { codigo: "CB10", nombre: "Física I", cuatrimestre: 2, requisitos: ["CB01"] },
+      { codigo: "CB37", nombre: "Sistemas de representación gráfica", cuatrimestre: 2, requisitos: ["CB36"] },
+
+      { codigo: "CB09", nombre: "Cálculo II", cuatrimestre: 3, requisitos: ["CB05", "CB06"] },
+      { codigo: "CB13", nombre: "Física II", cuatrimestre: 3, requisitos: ["CB05", "CB10"] },
+      { codigo: "CB02", nombre: "Ciencia, tecnología y sociedad", cuatrimestre: 3 },
+      { codigo: "IAL24", nombre: "Introducción a la calidad de los alimentos", cuatrimestre: 3 },
+
+      { codigo: "CB33", nombre: "Cálculo avanzado", cuatrimestre: 4, requisitos: ["CB06", "CB09"] },
+      { codigo: "CB34", nombre: "Probabilidad y estadística", cuatrimestre: 4, requisitos: ["CB09"] },
+      { codigo: "CB15", nombre: "Física III", cuatrimestre: 4, requisitos: ["CB09", "CB13"] },
+      { codigo: "IAL02", nombre: "Química inorgánica", cuatrimestre: 4, requisitos: ["CB01", "CB03"] },
+
+      { codigo: "IAL03", nombre: "Química analítica", cuatrimestre: 5, requisitos: ["CB03", "IAL01"] },
+      { codigo: "IAL04", nombre: "Química orgánica", cuatrimestre: 5, requisitos: ["CB03", "IAL01"] },
+      { codigo: "CB35", nombre: "Métodos numéricos", cuatrimestre: 5, requisitos: ["CB09"] },
+      { codigo: "IND05", nombre: "Estadística técnica", cuatrimestre: 5, requisitos: ["CB34"] },
+      { codigo: "IAL05", nombre: "Biología general", cuatrimestre: 5, requisitos: ["CB03", "IAL03"] },
+
+      { codigo: "IAL06", nombre: "Microbiología de los alimentos", cuatrimestre: 6, requisitos: ["IAL04", "IAL05"] },
+      { codigo: "IAL07", nombre: "Físico química", cuatrimestre: 6, requisitos: ["CB09", "CB03"] },
+      { codigo: "IAL08", nombre: "Química biológica", cuatrimestre: 6, requisitos: ["IAL04"] },
+      { codigo: "IND07", nombre: "Introducción a la metrología", cuatrimestre: 6, requisitos: ["CB15", "CB34"] },
+
+      { codigo: "IAL10", nombre: "Fenómenos de transporte", cuatrimestre: 7, requisitos: ["IAL07", "CB33"] },
+      { codigo: "IND08", nombre: "Automatización y control", cuatrimestre: 7, requisitos: ["CB15"] },
+      { codigo: "IAL12", nombre: "Termodinámica", cuatrimestre: 7, requisitos: ["CB15"] },
+      { codigo: "IAL11", nombre: "Operaciones unitarias I", cuatrimestre: 7, requisitos: ["IAL07"] },
+      { codigo: "IAL09", nombre: "Legislación alimentaria", cuatrimestre: 7, requisitos: ["IAL01", "IAL06"] },
+
+      { codigo: "IAL13", nombre: "Cadenas alimentarias I", cuatrimestre: 8, requisitos: ["IAL06", "IAL07"] },
+      { codigo: "IND12", nombre: "Instalaciones industriales", cuatrimestre: 8, requisitos: ["IND08", "IAL11"] },
+      { codigo: "IAL14", nombre: "Microbiología industrial", cuatrimestre: 8, requisitos: ["IAL06", "IAL08"] },
+      { codigo: "IND14", nombre: "Gestión de calidad", cuatrimestre: 8, requisitos: ["IAL24", "IND07"] },
+      { codigo: "IAL15", nombre: "Organización industrial", cuatrimestre: 8, requisitos: ["IAL24"] },
+
+      { codigo: "IAL16", nombre: "Preservación de alimentos", cuatrimestre: 9, requisitos: ["IAL06", "IAL07"] },
+      { codigo: "IAL17", nombre: "Cadenas alimentarias II", cuatrimestre: 9, requisitos: ["IAL13"] },
+      { codigo: "IAL18", nombre: "Operaciones unitarias II", cuatrimestre: 9, requisitos: ["IAL11"] },
+      { codigo: "IAL19", nombre: "Economía general", cuatrimestre: 9, requisitos: ["CB09"] },
+
+      { codigo: "IAL20", nombre: "Envases y procesos de envasado", cuatrimestre: 10, requisitos: ["IAL17"] },
+      { codigo: "IAL21", nombre: "Práctica profesional supervisada", cuatrimestre: 10, requisitos: ["IAL17", "IAL18", "IAL19"] },
+
+      { codigo: "IAL22", nombre: "Gestión ambiental", cuatrimestre: 11, requisitos: ["IAL17", "IND14"] },
+      { codigo: "IAL23", nombre: "Proyecto final integrador", cuatrimestre: 11, requisitos: ["IAL21"] }
+    ];
+
+    const aprobadas = JSON.parse(localStorage.getItem("materiasAprobadas") || "[]");
+
+    function guardarEstado() {
+      localStorage.setItem("materiasAprobadas", JSON.stringify(aprobadas));
+    }
+
+    function render() {
+      const malla = document.getElementById("malla");
+      malla.innerHTML = "";
+      for (let i = 1; i <= 11; i++) {
+        const col = document.createElement("div");
+        col.className = "cuatrimestre";
+        col.innerHTML = `<h3>Cuatrimestre ${i}</h3>`;
+        materias.filter(m => m.cuatrimestre === i).forEach(materia => {
+          const div = document.createElement("div");
+          div.className = "materia";
+          div.textContent = materia.nombre;
+          div.dataset.codigo = materia.codigo;
+
+          const faltantes = (materia.requisitos || []).filter(req => !aprobadas.includes(req));
+          if (aprobadas.includes(materia.codigo)) {
+            div.classList.add("aprobada");
+          } else if (faltantes.length) {
+            div.classList.add("bloqueada");
+            div.title = "Requiere: " + faltantes.join(", ");
+          }
+
+          div.onclick = () => {
+            if (div.classList.contains("bloqueada")) return;
+            const cod = materia.codigo;
+            const idx = aprobadas.indexOf(cod);
+            if (idx === -1) {
+              aprobadas.push(cod);
+            } else {
+              aprobadas.splice(idx, 1);
+            }
+            guardarEstado();
+            render();
+          };
+
+          col.appendChild(div);
+        });
+        malla.appendChild(col);
+      }
+    }
+
+    render();
+  </script>
+</body>
+</html>
